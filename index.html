@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Prompt Library for IT Support Teams – Jason Martinez</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- All styling is in this <style> block so the file is fully self-contained -->
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --bg-content: #ffffff;
+      --border: #dde2ee;
+      --accent: #2563eb;
+      --accent-soft: #e5edff;
+      --text-main: #111827;
+      --text-muted: #4b5563;
+      --code-bg: #f3f4f6;
+      --shadow-soft: 0 10px 25px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #eef3ff 0, #f5f7fb 45%, #f9fafb 100%);
+      color: var(--text-main);
+    }
+
+    .page {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    @media (min-width: 768px) {
+      .page {
+        padding: 2.5rem 1.5rem 4rem;
+      }
+    }
+
+    .header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.08);
+      color: var(--accent);
+      border: 1px solid rgba(37, 99, 235, 0.18);
+      width: fit-content;
+    }
+
+    .badge span.icon {
+      font-size: 0.9rem;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      margin: 0;
+      letter-spacing: 0.01em;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .meta {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.3rem;
+    }
+
+    .meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .meta span::before {
+      content: "•";
+      color: #9ca3af;
+    }
+
+    .meta span:first-child::before {
+      content: "";
+    }
+
+    .content-wrapper {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    @media (min-width: 960px) {
+      .content-wrapper {
+        grid-template-columns: 260px minmax(0, 1fr);
+        align-items: flex-start;
+      }
+    }
+
+    .toc {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 0.9rem;
+      border: 1px solid var(--border);
+      padding: 1rem 1.1rem;
+      box-shadow: var(--shadow-soft);
+      position: sticky;
+      top: 1.5rem;
+    }
+
+    @media (max-width: 959px) {
+      .toc {
+        position: static;
+      }
+    }
+
+    .toc-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.09em;
+      margin-bottom: 0.5rem;
+    }
+
+    .toc ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    .toc li {
+      margin: 0.25rem 0;
+    }
+
+    .toc a {
+      text-decoration: none;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.15rem;
+      border-radius: 0.5rem;
+    }
+
+    .toc a span.icon {
+      font-size: 1rem;
+    }
+
+    .toc a:hover {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .toc-footer {
+      margin-top: 0.65rem;
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+
+    .main {
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      padding: 1.35rem 1.2rem 1.8rem;
+      box-shadow: var(--shadow-soft);
+    }
+
+    @media (min-width: 768px) {
+      .main {
+        padding: 1.6rem 1.6rem 2rem;
+      }
+    }
+
+    h2 {
+      margin-top: 0;
+      margin-bottom: 0.45rem;
+      font-size: 1.1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.35rem;
+    }
+
+    p {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin: 0 0 0.6rem;
+      color: var(--text-main);
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .pill {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: #f3f4ff;
+      color: #4f46e5;
+      border: 1px solid #e0e7ff;
+    }
+
+    .section {
+      margin-top: 1.2rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .section-header-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content-center: center;
+    }
+
+    .section-header-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+      background: var(--accent-soft);
+    }
+
+    .section-header-title {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .section-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 0.45rem;
+    }
+
+    details {
+      border-radius: 0.6rem;
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      padding: 0.6rem 0.7rem;
+      margin-top: 0.45rem;
+    }
+
+    details[open] {
+      background: #f3f4ff;
+      border-color: #c7d2fe;
+    }
+
+    summary {
+      list-style: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .summary-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      background: #ffffff;
+      flex-shrink: 0;
+    }
+
+    details[open] .summary-icon {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .prompt-list {
+      margin-top: 0.55rem;
+      padding-left: 1rem;
+    }
+
+    .prompt-item {
+      margin-bottom: 0.45rem;
+      font-size: 0.9rem;
+    }
+
+    .prompt-label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .prompt-text {
+      display: block;
+      margin-top: 0.1rem;
+      padding: 0.25rem 0.4rem;
+      border-radius: 0.35rem;
+      background: var(--code-bg);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+      font-size: 0.8rem;
+      color: #111827;
+      word-break: break-word;
+    }
+
+    .quote {
+      border-left: 3px solid var(--accent);
+      padding-left: 0.65rem;
+      margin-top: 0.4rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .meta-footer {
+      margin-top: 1.2rem;
+      padding-top: 0.7rem;
+      border-top: 1px dashed var(--border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .meta-footer span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .meta-dot::before {
+      content: "•";
+      color: #9ca3af;
+    }
+
+    .contribute {
+      margin-top: 1.2rem;
+      padding-top: 0.9rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .contribute-title {
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="badge">
+        <span class="icon">📚</span>
+        <span>Internal Wiki · AI Enablement</span>
+      </div>
+      <h1>AI Prompt Library for IT Support Teams</h1>
+      <p class="subtitle">
+        Practical prompts for using ChatGPT and Copilot to improve ticket handling,
+        communication, and documentation in IT operations.
+      </p>
+      <div class="meta">
+        <span>Author: Jason Martinez</span>
+        <span>Role: AI Enablement · IT Support Operations</span>
+        <span>Last updated: November 2025</span>
+      </div>
+    </header>
+
+    <div class="content-wrapper">
+      <aside class="toc">
+        <div class="toc-title">On this page</div>
+        <ul>
+          <li><a href="#overview"><span class="icon">🧭</span><span>Overview</span></a></li>
+          <li><a href="#ticket-management"><span class="icon">🧠</span><span>Ticket Management</span></a></li>
+          <li><a href="#communication"><span class="icon">💬</span><span>Communication</span></a></li>
+          <li><a href="#documentation"><span class="icon">📘</span><span>Documentation</span></a></li>
+          <li><a href="#productivity"><span class="icon">⚙️</span><span>Productivity &amp; Process</span></a></li>
+          <li><a href="#ai-integration"><span class="icon">🔍</span><span>AI Integration Ideas</span></a></li>
+          <li><a href="#closing-notes"><span class="icon">✨</span><span>Closing Notes</span></a></li>
+          <li><a href="#contribute"><span class="icon">🛠️</span><span>Contribute</span></a></li>
+        </ul>
+        <div class="toc-footer">
+          Designed as a one-page internal knowledge base resource.
+        </div>
+      </aside>
+
+      <main class="main">
+        <section id="overview">
+          <h2>Overview</h2>
+          <p>
+            This wiki provides a practical collection of AI prompts designed
+            for IT support teams. The library focuses on using tools like
+            ChatGPT and Microsoft Copilot to:
+          </p>
+          <div class="pill-list">
+            <span class="pill">Faster ticket management</span>
+            <span class="pill">Clearer communication</span>
+            <span class="pill">Better documentation</span>
+            <span class="pill">Workflow improvement</span>
+          </div>
+          <p>
+            Each section includes prompts that can be copied directly into an AI
+            assistant and used with real tickets, emails, or internal documentation.
+          </p>
+        </section>
+
+        <section id="ticket-management" class="section">
+          <div class="section-header">
+            <div class="section-header-icon">🧠</div>
+            <div class="section-header-title">1. Ticket Management</div>
+          </div>
+          <div class="section-subtitle">
+            For summarizing, classifying, and resolving tickets faster.
+          </div>
+
+          <details open>
+            <summary>
+              <span class="summary-icon">+</span>
+              Core ticket prompts
+            </summary>
+            <div class="prompt-list">
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 1 – Ticket summary:</span>
+                <span class="prompt-text">
+                  Summarize this IT support ticket in one sentence for a manager’s daily report.
+                </span>
+              </div>
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 2 – User response:</span>
+                <span class="prompt-text">
+                  Draft a short, polite response to the user explaining the resolution.
+                </span>
+              </div>
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 3 – Classification:</span>
+                <span class="prompt-text">
+                  Classify this ticket into one of the following categories: Network, Hardware, Software, or Account Access.
+                </span>
+              </div>
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 4 – KB draft:</span>
+                <span class="prompt-text">
+                  Convert this ticket resolution into a short internal knowledge base article.
+                </span>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section id="communication" class="section">
+          <div class="section-header">
+            <div class="section-header-icon">💬</div>
+            <div class="section-header-title">2. Communication</div>
+          </div>
+          <div class="section-subtitle">
+            For writing better internal messages and user-facing updates.
+          </div>
+
+          <details open>
+            <summary>
+              <span class="summary-icon">+</span>
+              Messaging & updates
+            </summary>
+            <div class="prompt-list">
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 1 – Service restored:</span>
+                <span class="prompt-text">
+                  Write a clear, friendly Teams message letting staff know the Wi-Fi is back online.
+                </span>
+              </div>
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 2 – Non-technical audience:</span>
+                <span class="prompt-text">
+                  Reword this update so a non-technical manager can understand it.
+                </span>
+              </div>
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 3 – Queue status:</span>
+                <span class="prompt-text">
+                  Draft a short status update for today’s IT support queue.
+                </span>
+              </div>
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 4 – Empathetic reply:</span>
+                <span class="prompt-text">
+                  Write an empathetic reply to a frustrated user while keeping the tone professional.
+                </span>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section id="documentation" class="section">
+          <div class="section-header">
+            <div class="section-header-icon">📘</div>
+            <div class="section-header-title">3. Documentation</div>
+          </div>
+          <div class="section-subtitle">
+            For improving clarity, consistency, and knowledge sharing.
+          </div>
+
+          <details open>
+            <summary>
+              <span class="summary-icon">+</span>
+              Docs & knowledge base
+            </summary>
+            <div class="prompt-list">
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 1 – Log to KB:</span>
+                <span class="prompt-text">
+                  Turn this troubleshooting log into a step-by-step knowledge article.
+                </span>
+              </div>
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 2 – Simplify SOP:</span>
+                <span class="prompt-text">
+                  Simplify this SOP so that a new team member can follow it easily.
+                </span>
+              </div>
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 3 – Incident template:</span>
+                <span class="prompt-text">
+                  Write a short template for documenting an IT incident.
+                </span>
+              </div>
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 4 – Thread summary:</span>
+                <span class="prompt-text">
+                  Summarize this long support thread into a 5-bullet report.
+                </span>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section id="productivity" class="section">
+          <div class="section-header">
+            <div class="section-header-icon">⚙️</div>
+            <div class="section-header-title">4. Productivity &amp; Process</div>
+          </div>
+          <div class="section-subtitle">
+            For improving workload management and team processes.
+          </div>
+
+          <details open>
+            <summary>
+              <span class="summary-icon">+</span>
+              Workflow & planning
+            </summary>
+            <div class="prompt-list">
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 1 – Backlog reduction:</span>
+                <span class="prompt-text">
+                  List three ways to reduce ticket backlog using AI or automation.
+                </span>
+              </div>
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 2 – Onboarding checklist:</span>
+                <span class="prompt-text">
+                  Draft a checklist for onboarding new IT support staff.
+                </span>
+              </div>
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 3 – Weekly summary:</span>
+                <span class="prompt-text">
+                  Summarize this week’s top support issues into a manager-friendly report.
+                </span>
+              </div>
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 4 – ServiceNow docs:</span>
+                <span class="prompt-text">
+                  Brainstorm three ways to improve ServiceNow documentation workflows.
+                </span>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section id="ai-integration" class="section">
+          <div class="section-header">
+            <div class="section-header-icon">🔍</div>
+            <div class="section-header-title">5. AI Integration Ideas</div>
+          </div>
+          <div class="section-subtitle">
+            For exploring where AI can plug into IT support operations.
+          </div>
+
+          <details open>
+            <summary>
+              <span class="summary-icon">+</span>
+              Strategy & use cases
+            </summary>
+            <div class="prompt-list">
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 1 – Service desk value:</span>
+                <span class="prompt-text">
+                  How could ChatGPT help an IT service desk reduce response times?
+                </span>
+              </div>
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 2 – Copilot routine:</span>
+                <span class="prompt-text">
+                  Design a simple process where Copilot summarizes ticket queues each morning.
+                </span>
+              </div>
+              <div class="prompt-item">
+                <span class="prompt-label">Prompt 3 – High-impact use cases:</span>
+                <span class="prompt-text">
+                  Suggest three high-impact use cases for AI within front-end IT support.
+                </span>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section id="closing-notes" class="section">
+          <div class="section-header">
+            <div class="section-header-icon">✨</div>
+            <div class="section-header-title">Closing Notes</div>
+          </div>
+          <p>
+            This library is intended as a starting point for AI enablement in IT
+            operations. Teams can begin by using these prompts alongside existing
+            tools, then gradually move toward deeper automation and integration as
+            adoption grows.
+          </p>
+          <div class="quote">
+            “AI doesn’t replace experience — it amplifies it.”
+          </div>
+
+          <div class="meta-footer">
+            <span>Version: 1.0</span>
+            <span class="meta-dot">Owner: Jason Martinez</span>
+            <span class="meta-dot">Category: AI Enablement · IT Support</span>
+          </div>
+        </section>
+
+        <section id="contribute" class="section contribute">
+          <div class="contribute-title">Contribute / Edit this Wiki</div>
+          <p>
+            This page is designed to evolve as the team discovers new AI use cases.
+            To propose updates or new prompt categories:
+          </p>
+          <ul>
+            <li>Open the GitHub repository for this wiki.</li>
+            <li>Create a new branch or fork with your changes.</li>
+            <li>Edit the <code>index.html</code> file to add or update prompts.</li>
+            <li>Submit a pull request with a short description of your changes.</li>
+          </ul>
+          <p>
+            This keeps the prompt library living, collaborative, and aligned with
+            how the team actually works.
+          </p>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
