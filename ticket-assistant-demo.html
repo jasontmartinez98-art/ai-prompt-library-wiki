@@ -1,869 +1,595 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>AI Ticket Assistant (Demo) – Jason Martinez</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <style>
-    :root {
-      --bg: #f5f7fb;
-      --bg-content: #ffffff;
-      --border: #dde2ee;
-      --accent: #2563eb;
-      --accent-soft: #e5edff;
-      --text-main: #111827;
-      --text-muted: #4b5563;
-      --code-bg: #f3f4f6;
-      --shadow-soft: 0 10px 25px rgba(15, 23, 42, 0.06);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
-      background: radial-gradient(circle at top, #eef3ff 0, #f5f7fb 45%, #f9fafb 100%);
-      color: var(--text-main);
-    }
-
-    .page {
-      max-width: 1040px;
-      margin: 0 auto;
-      padding: 1.5rem 1rem 3rem;
-    }
-
-    @media (min-width: 768px) {
-      .page {
-        padding: 2.5rem 1.5rem 4rem;
-      }
-    }
-
-    a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    /* Header / Hero */
-    .top-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-      font-weight: 500;
-    }
-
-    .nav-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: #22c55e;
-    }
-
-    .nav-right a {
-      font-size: 0.85rem;
-    }
-
-    .hero {
-      background: linear-gradient(135deg, #1d4ed8, #6366f1);
-      border-radius: 1.1rem;
-      padding: 1.6rem 1.4rem;
-      color: #ffffff;
-      box-shadow: var(--shadow-soft);
-      display: grid;
-      grid-template-columns: minmax(0, 1.7fr);
-      gap: 1.25rem;
-    }
-
-    @media (min-width: 880px) {
-      .hero {
-        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr);
-        align-items: center;
-      }
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.78rem;
-      padding: 0.25rem 0.6rem;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.24);
-      border: 1px solid rgba(191, 219, 254, 0.4);
-      margin-bottom: 0.6rem;
-    }
-
-    .hero-title {
-      font-size: 1.8rem;
-      font-weight: 650;
-      margin: 0 0 0.4rem;
-      letter-spacing: 0.02em;
-    }
-
-    .hero-subtitle {
-      font-size: 0.95rem;
-      margin: 0 0 0.85rem;
-      color: #e5edff;
-    }
-
-    .hero-meta {
-      font-size: 0.8rem;
-      opacity: 0.9;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 0.85rem;
-    }
-
-    .hero-meta span::before {
-      content: "•";
-      margin: 0 0.3rem 0 0;
-      opacity: 0.7;
-    }
-
-    .hero-meta span:first-child::before {
-      content: "";
-      margin: 0;
-    }
-
-    .hero-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.85rem;
-      padding: 0.45rem 0.9rem;
-      border-radius: 999px;
-      background: #ffffff;
-      color: #1d4ed8;
-      font-weight: 500;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      margin-top: 0.2rem;
-    }
-
-    .hero-cta span.icon {
-      font-size: 1rem;
-    }
-
-    .hero-aside {
-      border-radius: 0.9rem;
-      border: 1px solid rgba(191, 219, 254, 0.6);
-      background: radial-gradient(circle at top left, rgba(191, 219, 254, 0.3), transparent);
-      padding: 0.9rem 0.95rem;
-      font-size: 0.8rem;
-      color: #e5edff;
-    }
-
-    .hero-aside-title {
-      font-weight: 600;
-      margin-bottom: 0.35rem;
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    .hero-aside-title span.icon {
-      font-size: 1rem;
-    }
-
-    .hero-aside ul {
-      padding-left: 1.1rem;
-      margin: 0.35rem 0 0;
-      list-style: disc;
-    }
-
-    .hero-aside li {
-      margin-bottom: 0.2rem;
-    }
-
-    /* Section shells */
-    .section {
-      margin-top: 1.7rem;
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.4rem;
-    }
-
-    .section-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      background: var(--accent-soft);
-    }
-
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-
-    .section-subtitle {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 0.8rem;
-    }
-
-    /* How it Works */
-    .how-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 0.8rem;
-    }
-
-    @media (min-width: 768px) {
-      .how-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-
-    .how-card {
-      background: var(--bg-content);
-      border-radius: 0.8rem;
-      border: 1px solid var(--border);
-      padding: 0.85rem 0.9rem;
-      box-shadow: var(--shadow-soft);
-      font-size: 0.9rem;
-    }
-
-    .how-step {
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--accent);
-      margin-bottom: 0.35rem;
-    }
-
-    .how-title {
-      font-weight: 600;
-      margin-bottom: 0.2rem;
-    }
-
-    .how-text {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    /* Ticket cards */
-    .tickets-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 1rem;
-    }
-
-    @media (min-width: 900px) {
-      .tickets-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    .ticket-card {
-      background: var(--bg-content);
-      border-radius: 0.95rem;
-      border: 1px solid var(--border);
-      padding: 0.9rem 0.95rem;
-      box-shadow: var(--shadow-soft);
-      font-size: 0.9rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-
-    .ticket-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .ticket-title {
-      font-weight: 600;
-    }
-
-    .ticket-tag {
-      font-size: 0.75rem;
-      padding: 0.15rem 0.45rem;
-      border-radius: 999px;
-      background: #fef3c7;
-      color: #92400e;
-      border: 1px solid #fcd34d;
-    }
-
-    .ticket-section-label {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      margin-bottom: 0.15rem;
-      font-weight: 600;
-    }
-
-    .ticket-text {
-      font-size: 0.85rem;
-      line-height: 1.4;
-      background: #f9fafb;
-      border-radius: 0.45rem;
-      padding: 0.4rem 0.5rem;
-    }
-
-    .ai-block {
-      border-radius: 0.55rem;
-      padding: 0.45rem 0.55rem;
-      background: #f3f4ff;
-      border: 1px solid #e0e7ff;
-    }
-
-    .ai-label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: #4f46e5;
-      margin-bottom: 0.2rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .ai-text {
-      font-size: 0.86rem;
-    }
-
-    .kb-block {
-      border-radius: 0.55rem;
-      padding: 0.45rem 0.55rem;
-      background: #f3f4f6;
-    }
-
-    .kb-heading {
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 0.1rem;
-    }
-
-    .kb-meta {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      margin-bottom: 0.15rem;
-    }
-
-    .kb-body {
-      font-size: 0.84rem;
-    }
-
-    /* Why it matters */
-    .benefits-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 0.85rem;
-    }
-
-    @media (min-width: 768px) {
-      .benefits-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-
-    .benefit-card {
-      background: var(--bg-content);
-      border-radius: 0.9rem;
-      border: 1px solid var(--border);
-      padding: 0.8rem 0.85rem;
-      box-shadow: var(--shadow-soft);
-      font-size: 0.88rem;
-    }
-
-    .benefit-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      background: var(--accent-soft);
-      margin-bottom: 0.35rem;
-    }
-
-    .benefit-title {
-      font-weight: 600;
-      margin-bottom: 0.2rem;
-    }
-
-    .benefit-text {
-      font-size: 0.84rem;
-      color: var(--text-muted);
-    }
-
-    /* Footer */
-    .footer {
-      margin-top: 2rem;
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      border-top: 1px dashed var(--border);
-      padding-top: 0.7rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .footer-left span::before {
-      content: "•";
-      margin: 0 0.3rem 0 0;
-      color: #9ca3af;
-    }
-
-    .footer-left span:first-child::before {
-      content: "";
-      margin: 0;
-    }
-
-    .footer-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-
-    .footer-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    .footer-link-icon {
-      font-size: 0.95rem;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AI Shift Assistant — Huddles & Handoffs</title>
+<style>
+  :root{
+    --bg:#f6f8fc; --card:#ffffff; --ink:#111827; --muted:#5b6472;
+    --line:#e5e9f3; --accent:#2563eb; --accent-soft:#e8efff;
+    --shadow:0 10px 24px rgba(15,23,42,.06);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    background:radial-gradient(1200px 600px at 20% -10%, #eef3ff, transparent), var(--bg);
+    color:var(--ink);
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:16px 12px 32px}
+  header{
+    display:flex;justify-content:space-between;align-items:center;
+    margin:6px 0 12px;color:var(--muted);font-size:.9rem
+  }
+  header a{color:var(--accent);text-decoration:none}
+  header a:hover{text-decoration:underline}
+
+  .hero{
+    background:linear-gradient(135deg,#1d4ed8,#6366f1);
+    color:#fff;border-radius:14px;padding:18px;
+    box-shadow:var(--shadow);display:grid;gap:10px
+  }
+  .hero h1{margin:0;font-size:1.6rem;letter-spacing:.2px}
+  .hero p{margin:0;color:#e6ecff}
+  .hero .meta{font-size:.85rem;opacity:.95;margin-top:4px}
+  .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .pill{
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.35);
+    border-radius:999px;padding:4px 10px;font-size:.8rem
+  }
+
+  .tabs{margin-top:16px;display:flex;gap:6px;flex-wrap:wrap}
+  .tabbtn{
+    flex:1 0 160px;
+    background:#fff;border:1px solid var(--line);
+    padding:9px 10px;border-radius:999px;
+    cursor:pointer;color:var(--ink);
+    box-shadow:var(--shadow);
+    text-align:center;font-size:.9rem
+  }
+  .tabbtn.active{background:var(--accent);border-color:transparent;color:#fff}
+
+  .panel{
+    margin-top:12px;background:var(--card);
+    border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);padding:12px
+  }
+
+  .controls{display:grid;grid-template-columns:1fr;gap:10px}
+  @media (min-width:720px){.controls{grid-template-columns:1fr 1fr}}
+  label{font-size:.9rem;color:var(--muted)}
+  select,textarea,input[type="text"]{
+    width:100%;padding:10px;border:1px solid var(--line);
+    border-radius:10px;background:#fff;font:inherit
+  }
+  textarea{min-height:160px;resize:vertical}
+
+  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .btn{
+    background:var(--accent);color:#fff;border:none;
+    border-radius:10px;padding:9px 11px;cursor:pointer;font-size:.9rem
+  }
+  .btn.alt{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+  .btn.gray{background:#f3f4f6;color:#111;border:1px solid var(--line)}
+  .btn.warn{background:#fee2e2;color:#b91c1c;border:1px solid #fecaca}
+
+  .out-card{
+    margin-top:10px;background:#fff;border:1px solid var(--line);
+    border-radius:12px;padding:10px
+  }
+  .out-card h3{margin:0 0 4px;font-size:1rem}
+  .meta-line{font-size:.8rem;color:var(--muted);margin-bottom:6px}
+  code.box{
+    display:block;white-space:pre-wrap;background:#f6f7fb;
+    border:1px solid var(--line);border-radius:10px;
+    padding:10px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:.9rem
+  }
+
+  .footer{
+    margin-top:18px;color:var(--muted);font-size:.85rem;
+    display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap
+  }
+  .footer a{color:var(--accent);text-decoration:none}
+  .small{font-size:.85rem;color:var(--muted)}
+</style>
 </head>
 <body>
-  <div class="page">
-    <div class="top-nav">
-      <div class="nav-left">
-        <div class="nav-dot"></div>
-        <span>AI Enablement · Internal Demo</span>
+  <div class="wrap">
+    <header>
+      <div>● <span class="small">AI Shift Assistant · Internal Tool</span></div>
+      <div><a href="./index.html">← Back to AI Prompt Wiki</a></div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <h1>AI Shift Assistant</h1>
+        <p>Turn team huddle notes and end-of-shift updates into clean, shareable summaries.</p>
+        <div class="row">
+          <span class="pill">Morning · Afternoon · Overnight</span>
+          <span class="pill">Huddles · Handoffs · Manager View</span>
+        </div>
+        <div class="meta" id="clock">Today — </div>
       </div>
-      <div class="nav-right">
-        <!-- Adjust this link if your index.html is in a different path -->
-        <a href="./index.html">← Back to AI Prompt Wiki</a>
+    </section>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tabbtn active" data-tab="huddle">Team Huddle</button>
+      <button class="tabbtn" data-tab="handoff">Shift Handoff</button>
+      <button class="tabbtn" data-tab="manager">Manager Summary</button>
+    </div>
+
+    <!-- TEAM HUDDLE -->
+    <div id="huddle" class="panel">
+      <div class="controls">
+        <div>
+          <label>Huddle</label>
+          <select id="huddleShift">
+            <option>Morning (7am–3pm)</option>
+            <option>Afternoon (12pm–9pm)</option>
+            <option>Overnight (9pm–7am)</option>
+          </select>
+        </div>
+        <div>
+          <label>Location / Site (optional)</label>
+          <input id="huddleSite" type="text" placeholder="e.g., HQ · Floor 3 · Charlotte" />
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <label>Paste what each tech shared in huddle</label>
+        <textarea id="huddleInput" placeholder="Jason — Imaging (2 pending), VPN follow-ups
+Taylor — VIP setup for CFO, blocked on hardware
+Sam — Waiting on Network for switch ports"></textarea>
+      </div>
+      <div class="btns">
+        <button class="btn" id="genHuddle">Generate Huddle Summary</button>
+        <button class="btn alt" id="copyHuddle">Copy</button>
+        <button class="btn gray" id="copyHuddleEmail">Copy Email Version</button>
+        <button class="btn gray" id="copyHuddleTeams">Copy Teams Version</button>
+        <button class="btn warn" id="dlHuddle">Download .md</button>
+      </div>
+
+      <div class="out-card">
+        <h3>Huddle Summary</h3>
+        <div class="meta-line" id="huddleMeta"></div>
+        <code class="box" id="huddleOut">—</code>
       </div>
     </div>
 
-    <!-- Hero -->
-    <section class="hero">
+    <!-- SHIFT HANDOFF -->
+    <div id="handoff" class="panel" style="display:none">
+      <div class="controls">
+        <div>
+          <label>Shift</label>
+          <select id="handoffShift">
+            <option>Morning (7am–3pm)</option>
+            <option>Afternoon (12pm–9pm)</option>
+            <option>Overnight (9pm–7am)</option>
+          </select>
+        </div>
+        <div>
+          <label>Location / Site (optional)</label>
+          <input id="handoffSite" type="text" placeholder="e.g., HQ · Floor 3 · Charlotte" />
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <label>Paste what was completed / still open / blocked this shift</label>
+        <textarea id="handoffInput" placeholder="Completed: VPN resets, 2x laptop imaging
+Pending: Network switch port ticket
+Blocked: Waiting on hardware delivery"></textarea>
+      </div>
+      <div class="btns">
+        <button class="btn" id="genHandoff">Generate Shift Handoff</button>
+        <button class="btn alt" id="copyHandoff">Copy</button>
+        <button class="btn gray" id="copyHandoffEmail">Copy Email Version</button>
+        <button class="btn gray" id="copyHandoffTeams">Copy Teams Version</button>
+        <button class="btn warn" id="dlHandoff">Download .md</button>
+      </div>
+
+      <div class="out-card">
+        <h3>Shift Handoff</h3>
+        <div class="meta-line" id="handoffMeta"></div>
+        <code class="box" id="handoffOut">—</code>
+      </div>
+    </div>
+
+    <!-- MANAGER SUMMARY -->
+    <div id="manager" class="panel" style="display:none">
       <div>
-        <div class="hero-badge">
-          <span>🧠 AI Ticket Assistant (Demo)</span>
-        </div>
-        <h1 class="hero-title">Helping IT support teams work faster with AI.</h1>
-        <p class="hero-subtitle">
-          A proof of concept showing how tools like ChatGPT and Copilot can summarize
-          tickets, draft user responses, and generate documentation for IT operations.
-        </p>
-        <div class="hero-meta">
-          <span>Designed by Jason Martinez</span>
-          <span>AI Enablement · IT Support Operations</span>
-        </div>
-        <a href="#tickets" class="hero-cta">
-          <span class="icon">👇</span>
-          <span>View example tickets</span>
-        </a>
+        <label>Paste all shift handoffs (Morning, Afternoon, Overnight). Leave a blank line between each.</label>
+        <textarea id="managerInput" placeholder="(Morning Handoff)
+• Imaging for Finance...
+• VPN reset...
+
+(Afternoon Handoff)
+• VIP setup for CFO...
+• Hardware delay...
+
+(Overnight Handoff)
+• Printer outages...
+• INC-10428 escalated..."></textarea>
       </div>
-      <aside class="hero-aside">
-        <div class="hero-aside-title">
-          <span class="icon">✨</span>
-          <span>What this demo represents</span>
-        </div>
-        <p>
-          This page simulates how an AI assistant could plug into an IT support
-          workflow as a “sidekick” for agents – not to replace them, but to speed up
-          the writing and documentation work around tickets.
-        </p>
-        <ul>
-          <li>No live data or systems – just realistic scenarios.</li>
-          <li>Designed to be vendor-agnostic (ServiceNow, Jira, etc.).</li>
-          <li>Shows what AI enablement could look like in practice.</li>
-        </ul>
-      </aside>
-    </section>
-
-    <!-- How it works -->
-    <section class="section" id="how-it-works">
-      <div class="section-header">
-        <div class="section-icon">⚙️</div>
-        <div class="section-title">How this assistant would fit into the workflow</div>
+      <div class="btns">
+        <button class="btn" id="genManager">Generate Manager Summary</button>
+        <button class="btn alt" id="copyManager">Copy</button>
+        <button class="btn gray" id="copyManagerEmail">Copy Email Version</button>
+        <button class="btn gray" id="copyManagerTeams">Copy Teams Version</button>
+        <button class="btn warn" id="dlManager">Download .md</button>
       </div>
-      <p class="section-subtitle">
-        The idea is simple: the agent still owns the ticket – AI just helps with the text-heavy parts.
-      </p>
-      <div class="how-grid">
-        <div class="how-card">
-          <div class="how-step">Step 1</div>
-          <div class="how-title">Paste or receive the ticket</div>
-          <div class="how-text">
-            The IT agent copies the user’s description from the ticketing system
-            (ServiceNow, Jira, etc.) into the AI assistant.
-          </div>
-        </div>
-        <div class="how-card">
-          <div class="how-step">Step 2</div>
-          <div class="how-title">AI summarizes and drafts responses</div>
-          <div class="how-text">
-            AI generates a concise internal summary, a suggested user-facing response,
-            and a KB-style resolution draft.
-          </div>
-        </div>
-        <div class="how-card">
-          <div class="how-step">Step 3</div>
-          <div class="how-title">Agent reviews and finalizes</div>
-          <div class="how-text">
-            The agent keeps full control – editing, approving, and pasting the content
-            back into the ticket, email, or knowledge base.
-          </div>
-        </div>
+
+      <div class="out-card">
+        <h3>Daily Deskside Summary</h3>
+        <div class="meta-line" id="managerMeta"></div>
+        <code class="box" id="managerOut">—</code>
       </div>
-    </section>
+    </div>
 
-    <!-- Example tickets -->
-    <section class="section" id="tickets">
-      <div class="section-header">
-        <div class="section-icon">📩</div>
-        <div class="section-title">Example tickets with AI-generated support</div>
-      </div>
-      <p class="section-subtitle">
-        Each example below shows how an AI assistant could support the agent with a realistic IT issue:
-        internal summary, user response, and documentation.
-      </p>
-
-      <div class="tickets-grid">
-        <!-- Ticket 1 -->
-        <article class="ticket-card">
-          <div class="ticket-header">
-            <div>
-              <div class="ticket-title">Ticket #1 – VPN not connecting from home</div>
-              <div class="ticket-tag">Remote access</div>
-            </div>
-          </div>
-
-          <div>
-            <div class="ticket-section-label">Ticket input (user description)</div>
-            <div class="ticket-text">
-              “I’m working from home and can’t connect to the VPN. It keeps giving me an
-              error that my network credentials are invalid. I’ve rebooted my laptop
-              and router a couple of times but it still won’t connect.”
-            </div>
-          </div>
-
-          <div class="ai-block">
-            <div class="ai-label">AI summary (internal)</div>
-            <div class="ai-text">
-              Remote user unable to connect to corporate VPN from home due to invalid or
-              outdated credentials; resolved by resetting VPN profile and verifying
-              authentication.
-            </div>
-          </div>
-
-          <div class="ai-block">
-            <div class="ai-label">AI draft – response to user</div>
-            <div class="ai-text">
-              Hi [Name],<br /><br />
-              We’ve reset your VPN profile and verified your network credentials on
-              our side. Please restart your laptop, reconnect to your home network,
-              and try logging into the VPN again.<br /><br />
-              If you still see an “invalid credentials” message, please send us a
-              screenshot and we’ll continue troubleshooting from there.<br /><br />
-              Thanks,<br />
-              IT Support
-            </div>
-          </div>
-
-          <div class="kb-block">
-            <div class="kb-heading">KB article draft (internal)</div>
-            <div class="kb-meta">
-              <strong>Title:</strong> VPN Fails with “Invalid Network Credentials” from Home<br />
-              <strong>Category:</strong> Remote access / VPN
-            </div>
-            <div class="kb-body">
-              <strong>Issue:</strong> User could not connect to VPN from a home
-              network and received an “invalid network credentials” error.<br /><br />
-              <strong>Cause:</strong> VPN profile was out of sync with current
-              credentials stored in the directory.<br /><br />
-              <strong>Resolution:</strong>
-              <ul>
-                <li>Reset VPN profile in the admin console.</li>
-                <li>Verified user account status and credentials.</li>
-                <li>Asked user to reboot device and reconnect to VPN.</li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
-        <!-- Ticket 2 -->
-        <article class="ticket-card">
-          <div class="ticket-header">
-            <div>
-              <div class="ticket-title">Ticket #2 – Outlook crashes on attachments</div>
-              <div class="ticket-tag">Email client</div>
-            </div>
-          </div>
-
-          <div>
-            <div class="ticket-section-label">Ticket input (user description)</div>
-            <div class="ticket-text">
-              “Every time I try to open an attachment in Outlook, the app freezes and
-              then closes. I’ve tried with different emails and file types and it
-              keeps happening.”
-            </div>
-          </div>
-
-          <div class="ai-block">
-            <div class="ai-label">AI summary (internal)</div>
-            <div class="ai-text">
-              User’s Outlook client crashes whenever attachments are opened; issue
-              resolved by repairing the Outlook installation and clearing local cache.
-            </div>
-          </div>
-
-          <div class="ai-block">
-            <div class="ai-label">AI draft – response to user</div>
-            <div class="ai-text">
-              Hi [Name],<br /><br />
-              We’ve repaired your Outlook installation and cleared the local cache
-              files that were causing the application to crash when opening attachments.<br /><br />
-              Please relaunch Outlook and try opening a few attachments again. If you
-              notice any continued crashes or freezing, let us know which email and
-              file type you’re using and we’ll investigate further.<br /><br />
-              Best,<br />
-              IT Support
-            </div>
-          </div>
-
-          <div class="kb-block">
-            <div class="kb-heading">KB article draft (internal)</div>
-            <div class="kb-meta">
-              <strong>Title:</strong> Outlook Crashes When Opening Attachments<br />
-              <strong>Category:</strong> Messaging / Outlook
-            </div>
-            <div class="kb-body">
-              <strong>Issue:</strong> Outlook crashed consistently when users opened
-              email attachments of various file types.<br /><br />
-              <strong>Cause:</strong> Corrupted local cache files and incomplete
-              Office installation components.<br /><br />
-              <strong>Resolution:</strong>
-              <ul>
-                <li>Run “Quick Repair” or “Online Repair” for Office/Outlook.</li>
-                <li>Clear Outlook cache and temporary files.</li>
-                <li>Restart Outlook and validate that attachments open normally.</li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
-        <!-- Ticket 3 -->
-        <article class="ticket-card">
-          <div class="ticket-header">
-            <div>
-              <div class="ticket-title">Ticket #3 – Printer missing from device list</div>
-              <div class="ticket-tag">Printing</div>
-            </div>
-          </div>
-
-          <div>
-            <div class="ticket-section-label">Ticket input (user description)</div>
-            <div class="ticket-text">
-              “The 3rd floor printer isn’t showing up in my list anymore. I used it
-              last week, but now it’s just gone and I can’t print anything to it.”
-            </div>
-          </div>
-
-          <div class="ai-block">
-            <div class="ai-label">AI summary (internal)</div>
-            <div class="ai-text">
-              User cannot see the 3rd floor printer in their devices list; resolved
-              by reinstalling the printer driver and remapping the printer from the
-              print server.
-            </div>
-          </div>
-
-          <div class="ai-block">
-            <div class="ai-label">AI draft – response to user</div>
-            <div class="ai-text">
-              Hi [Name],<br /><br />
-              We’ve reinstalled the driver and re-mapped the 3rd floor printer to
-              your profile. It should now appear in your printer list and be
-              available as a print option in your applications.<br /><br />
-              Please try printing a test page. If the printer still doesn’t show up
-              or you see an error, reply with a screenshot and we’ll take another
-              look.<br /><br />
-              Thanks,<br />
-              IT Support
-            </div>
-          </div>
-
-          <div class="kb-block">
-            <div class="kb-heading">KB article draft (internal)</div>
-            <div class="kb-meta">
-              <strong>Title:</strong> Network Printer Not Appearing in Device List<br />
-              <strong>Category:</strong> Printing / Devices
-            </div>
-            <div class="kb-body">
-              <strong>Issue:</strong> Floor printer disappeared from user’s available
-              printer list after previously working.<br /><br />
-              <strong>Cause:</strong> Local printer mapping or driver became invalid
-              or corrupted.<br /><br />
-              <strong>Resolution:</strong>
-              <ul>
-                <li>Remove old printer mapping from the device.</li>
-                <li>Reinstall or update the printer driver.</li>
-                <li>Remap the printer from the central print server.</li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
-        <!-- Ticket 4 -->
-        <article class="ticket-card">
-          <div class="ticket-header">
-            <div>
-              <div class="ticket-title">Ticket #4 – Software request stuck in approval</div>
-              <div class="ticket-tag">Software / Access</div>
-            </div>
-          </div>
-
-          <div>
-            <div class="ticket-section-label">Ticket input (user description)</div>
-            <div class="ticket-text">
-              “I requested access to [Software Name] a few days ago and the portal
-              still says 'pending approval'. I need it for a project and haven’t
-              heard anything back.”
-            </div>
-          </div>
-
-          <div class="ai-block">
-            <div class="ai-label">AI summary (internal)</div>
-            <div class="ai-text">
-              User’s software access request has been pending in the approval queue
-              for several days; resolved by manually approving the request and
-              completing installation via the company portal.
-            </div>
-          </div>
-
-          <div class="ai-block">
-            <div class="ai-label">AI draft – response to user</div>
-            <div class="ai-text">
-              Hi [Name],<br /><br />
-              We reviewed your request for [Software Name] and have manually
-              approved it in the system. The software has now been installed and
-              should be available from your Start menu or application launcher.<br /><br />
-              If you still don’t see it or run into any access issues, please let us
-              know and we’ll check your permissions.<br /><br />
-              Best,<br />
-              IT Support
-            </div>
-          </div>
-
-          <div class="kb-block">
-            <div class="kb-heading">KB article draft (internal)</div>
-            <div class="kb-meta">
-              <strong>Title:</strong> Software Request Stuck in Pending Approval<br />
-              <strong>Category:</strong> Software / Access Requests
-            </div>
-            <div class="kb-body">
-              <strong>Issue:</strong> Software installation requests remained in
-              “pending approval” state longer than expected.<br /><br />
-              <strong>Cause:</strong> Approval workflow delay in the portal; request
-              not auto-routed or confirmed.<br /><br />
-              <strong>Resolution:</strong>
-              <ul>
-                <li>Review request in admin portal and approve manually.</li>
-                <li>Trigger installation from the software catalog.</li>
-                <li>Confirm the user can see and launch the application.</li>
-              </ul>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- Why it matters -->
-    <section class="section">
-      <div class="section-header">
-        <div class="section-icon">📊</div>
-        <div class="section-title">Why this kind of assistant matters</div>
-      </div>
-      <p class="section-subtitle">
-        Even without changing existing tools, an AI “sidekick” like this can make a
-        noticeable difference in day-to-day support work.
-      </p>
-
-      <div class="benefits-grid">
-        <div class="benefit-card">
-          <div class="benefit-icon">⏱️</div>
-          <div class="benefit-title">Time savings on repetitive writing</div>
-          <div class="benefit-text">
-            Agents spend less time rewriting the same type of responses and
-            documentation, and more time actually resolving issues.
-          </div>
-        </div>
-        <div class="benefit-card">
-          <div class="benefit-icon">💬</div>
-          <div class="benefit-title">Consistent, professional tone</div>
-          <div class="benefit-text">
-            User communications stay clear, friendly, and consistent across the team,
-            even during busy periods or high ticket volume.
-          </div>
-        </div>
-        <div class="benefit-card">
-          <div class="benefit-icon">📘</div>
-          <div class="benefit-title">Better documentation over time</div>
-          <div class="benefit-text">
-            Turning more tickets into KB articles makes future issues easier to
-            solve, and helps onboard new support staff faster.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="footer-left">
-        <span>AI Ticket Assistant Demo</span>
-        <span>Part of the AI Enablement toolkit</span>
-      </div>
-      <div class="footer-links">
-        <a class="footer-link" href="./index.html">
-          <span class="footer-link-icon">📚</span>
-          <span>AI Prompt Library Wiki</span>
-        </a>
-        <span class="footer-link">
-          <span class="footer-link-icon">👤</span>
-          <span>Built by Jason Martinez</span>
-        </span>
-      </div>
-    </footer>
+    <div class="footer">
+      <div>Part of Jason Martinez’s AI Enablement Toolkit</div>
+      <div><a href="./ticket-assistant-demo.html">AI Ticket Assistant Demo →</a></div>
+    </div>
   </div>
+
+<script>
+(function(){
+  // Clock
+  const clock = document.getElementById('clock');
+  function fmtNow(){
+    const d = new Date();
+    const opts = {
+      weekday:'short', year:'numeric', month:'short', day:'numeric',
+      hour:'2-digit', minute:'2-digit'
+    };
+    return d.toLocaleString(undefined, opts);
+  }
+  clock.textContent = `Today — ${fmtNow()}`;
+
+  // Tabs
+  const tabs = document.querySelectorAll('.tabbtn');
+  const panels = {
+    huddle: document.getElementById('huddle'),
+    handoff: document.getElementById('handoff'),
+    manager: document.getElementById('manager')
+  };
+  tabs.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      tabs.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const id = btn.dataset.tab;
+      Object.entries(panels).forEach(([k,el])=>{
+        el.style.display = (k===id) ? 'block' : 'none';
+      });
+    });
+  });
+
+  // Utils
+  function copyText(text){
+    if(!text || text === '—') return;
+    navigator.clipboard.writeText(text).catch(()=>{});
+  }
+  function download(name, content){
+    if(!content || content === '—') return;
+    const blob = new Blob([content], {type:'text/markdown;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 500);
+  }
+  function bulletize(text){
+    return text
+      .split(/\n+/)
+      .map(s=>s.trim())
+      .filter(Boolean)
+      .map(s=>{
+        if(s.startsWith('-') || s.startsWith('•')) return s.replace(/^[-•]\s*/, '• ');
+        return `• ${s}`;
+      })
+      .join('\n');
+  }
+
+  // TEAM HUDDLE LOGIC
+  const huddleShift = document.getElementById('huddleShift');
+  const huddleSite  = document.getElementById('huddleSite');
+  const huddleInput = document.getElementById('huddleInput');
+  const huddleMeta  = document.getElementById('huddleMeta');
+  const huddleOut   = document.getElementById('huddleOut');
+
+  function buildHuddle(){
+    const shift = huddleShift.value;
+    const site  = huddleSite.value.trim();
+    const raw   = huddleInput.value.trim();
+    const now   = fmtNow();
+
+    huddleMeta.textContent = `${now} · ${shift}${site?` · ${site}`:''}`;
+
+    const updates = raw ? raw.split(/\n+/).map(l=>l.trim()).filter(Boolean) : [];
+    const bul = updates.length ? updates.map(line=>{
+      // Try split on "—" or "-"
+      const parts = line.split(/—|-/);
+      if(parts.length >= 2){
+        const who = parts[0].trim().replace(/:$/,'');
+        const what = parts.slice(1).join('—').trim();
+        return `• ${who}: ${what}`;
+      }
+      return `• ${line}`;
+    }).join('\n') : '• (Add each technician’s update here)';
+
+    const body =
+`Huddle Summary — ${shift}
+Date/Time: ${now}${site?`\nLocation: ${site}`:''}
+
+Team Updates:
+${bul}
+
+Blockers (if any):
+• (Add any blockers mentioned here)
+
+Priorities for this shift:
+• (Add priorities agreed in huddle here)`.trim();
+
+    huddleOut.textContent = body;
+    return body;
+  }
+
+  document.getElementById('genHuddle').addEventListener('click', buildHuddle);
+  document.getElementById('copyHuddle').addEventListener('click', ()=>{
+    copyText(huddleOut.textContent);
+  });
+  document.getElementById('copyHuddleEmail').addEventListener('click', ()=>{
+    const base = buildHuddle();
+    const email =
+`Huddle Summary
+
+${base}
+
+Regards,
+Deskside Support`.trim();
+    copyText(email);
+  });
+  document.getElementById('copyHuddleTeams').addEventListener('click', ()=>{
+    const base = buildHuddle();
+    const teams =
+`Huddle Summary
+
+${base}
+
+(Shared via AI Shift Assistant)`.trim();
+    copyText(teams);
+  });
+  document.getElementById('dlHuddle').addEventListener('click', ()=>{
+    download('huddle-summary.md', huddleOut.textContent + '\n');
+  });
+
+  // SHIFT HANDOFF LOGIC
+  const handoffShift = document.getElementById('handoffShift');
+  const handoffSite  = document.getElementById('handoffSite');
+  const handoffInput = document.getElementById('handoffInput');
+  const handoffMeta  = document.getElementById('handoffMeta');
+  const handoffOut   = document.getElementById('handoffOut');
+
+  function buildHandoff(){
+    const shift = handoffShift.value;
+    const site  = handoffSite.value.trim();
+    const raw   = handoffInput.value.trim();
+    const now   = fmtNow();
+
+    handoffMeta.textContent = `${now} · ${shift}${site?` · ${site}`:''}`;
+
+    let completed = [];
+    let pending   = [];
+    let blocked   = [];
+
+    if(raw){
+      // Simple parse: look for keywords in each line
+      raw.split(/\n+/).map(l=>l.trim()).filter(Boolean).forEach(line=>{
+        const low = line.toLowerCase();
+        if(low.startsWith('completed:') || low.startsWith('done:')){
+          completed.push(line.replace(/^completed:|^done:/i,'').trim());
+        } else if(low.startsWith('pending:') || low.startsWith('open:')){
+          pending.push(line.replace(/^pending:|^open:/i,'').trim());
+        } else if(low.startsWith('blocked:') || low.startsWith('waiting:')){
+          blocked.push(line.replace(/^blocked:|^waiting:/i,'').trim());
+        } else {
+          // If it doesn't match, drop into pending by default
+          pending.push(line);
+        }
+      });
+    }
+
+    const body =
+`Shift Handoff — ${shift}
+Date/Time: ${now}${site?`\nLocation: ${site}`:''}
+
+Work Completed:
+${completed.length ? bulletize(completed.join('\n')) : '• (Add completed work items here)'}
+
+Pending / In Progress:
+${pending.length ? bulletize(pending.join('\n')) : '• (Add pending items here)'}
+
+Blocked / Waiting On:
+${blocked.length ? bulletize(blocked.join('\n')) : '• (Add blockers here)'}
+
+Notes for Next Shift:
+• (Add any special instructions or watch-outs here)`.trim();
+
+    handoffOut.textContent = body;
+    return body;
+  }
+
+  document.getElementById('genHandoff').addEventListener('click', buildHandoff);
+  document.getElementById('copyHandoff').addEventListener('click', ()=>{
+    copyText(handoffOut.textContent);
+  });
+  document.getElementById('copyHandoffEmail').addEventListener('click', ()=>{
+    const base = buildHandoff();
+    const email =
+`Shift Handoff
+
+${base}
+
+Regards,
+Deskside Support`.trim();
+    copyText(email);
+  });
+  document.getElementById('copyHandoffTeams').addEventListener('click', ()=>{
+    const base = buildHandoff();
+    const teams =
+`Shift Handoff
+
+${base}
+
+(Shared via AI Shift Assistant)`.trim();
+    copyText(teams);
+  });
+  document.getElementById('dlHandoff').addEventListener('click', ()=>{
+    download('shift-handoff.md', handoffOut.textContent + '\n');
+  });
+
+  // MANAGER SUMMARY LOGIC
+  const managerInput = document.getElementById('managerInput');
+  const managerMeta  = document.getElementById('managerMeta');
+  const managerOut   = document.getElementById('managerOut');
+
+  function buildManager(){
+    const raw = managerInput.value.trim();
+    const now = fmtNow();
+    managerMeta.textContent = now;
+
+    if(!raw){
+      const blank =
+`Daily Deskside Summary — ${now}
+
+Shift Overview:
+• Morning:
+• Afternoon:
+• Overnight:
+
+Key Themes:
+• (Add repeated patterns here)
+
+Blockers & Escalations:
+• (Add escalations and blockers here)
+
+VIP / High Priority Items:
+• (Add VIP work here)
+
+Ongoing Projects:
+• (Add ongoing deskside / infra projects here)
+
+Repeated Issues (Detected Across Shifts):
+• (Populate based on handoffs)
+
+Recommendations for Next Shift:
+• (Add recommendations here)
+
+Notes:
+• (Add any context or notes here)`.trim();
+      managerOut.textContent = blank;
+      return blank;
+    }
+
+    // Split into blocks by blank lines (morning / afternoon / overnight handoffs)
+    const blocks = raw.split(/\n\s*\n/).map(b=>b.trim()).filter(Boolean);
+
+    // Simple keyword-based repeated issue detection
+    const textLower = raw.toLowerCase();
+    const keywords = [
+      'network', 'switch port', 'vpn', 'printer', 'imaging',
+      'hardware', 'onboarding', 'wifi', 'outage', 'latency'
+    ];
+    const repeated = [];
+    keywords.forEach(k=>{
+      const re = new RegExp(k.replace(' ','\\s+'),'g');
+      const matches = textLower.match(re);
+      if(matches && matches.length >= 2){
+        repeated.push({ key:k, count:matches.length });
+      }
+    });
+
+    const repLines = repeated.length
+      ? repeated.map(r=>`• ${capitalize(r.key)} (appears ${r.count} times)`).join('\n')
+      : '• (No repeated issues detected by keyword scan)';
+
+    // Build simple "Shift Overview" lines from blocks (best-effort)
+    const overviewLines = [];
+    if(blocks[0]) overviewLines.push(`• Morning: ${shorten(blocks[0])}`);
+    if(blocks[1]) overviewLines.push(`• Afternoon: ${shorten(blocks[1])}`);
+    if(blocks[2]) overviewLines.push(`• Overnight: ${shorten(blocks[2])}`);
+
+    const body =
+`Daily Deskside Summary — ${now}
+
+Shift Overview:
+${overviewLines.length ? overviewLines.join('\n') : '• (Add 1–2 bullets per shift here)'}
+
+Key Themes:
+• (Add patterns seen across shifts here)
+
+Blockers & Escalations:
+• (Add unresolved issues, escalations, and dependencies here)
+
+VIP / High Priority Items:
+• (List VIP users / high-impact work here)
+
+Ongoing Projects:
+• (List active deskside projects: refreshes, rollouts, migrations, etc.)
+
+Repeated Issues (Detected Across Shifts):
+${repLines}
+
+Recommendations for Next Shift:
+• (Add what the next shift should focus on)
+
+Notes:
+• (Add any extra context, volume notes, staffing, etc.)`.trim();
+
+    managerOut.textContent = body;
+    return body;
+  }
+
+  function capitalize(s){
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+  function shorten(text){
+    // Take first line, truncate to ~80 chars
+    const firstLine = text.split('\n')[0].trim();
+    return firstLine.length > 80 ? firstLine.slice(0,77) + '...' : firstLine;
+  }
+
+  document.getElementById('genManager').addEventListener('click', buildManager);
+  document.getElementById('copyManager').addEventListener('click', ()=>{
+    copyText(managerOut.textContent);
+  });
+  document.getElementById('copyManagerEmail').addEventListener('click', ()=>{
+    const base = buildManager();
+    const email =
+`Daily Deskside Summary
+
+${base}
+
+Regards,
+Deskside Support`.trim();
+    copyText(email);
+  });
+  document.getElementById('copyManagerTeams').addEventListener('click', ()=>{
+    const base = buildManager();
+    const teams =
+`Daily Deskside Summary
+
+${base}
+
+(Shared via AI Shift Assistant)`.trim();
+    copyText(teams);
+  });
+  document.getElementById('dlManager').addEventListener('click', ()=>{
+    download('daily-deskside-summary.md', managerOut.textContent + '\n');
+  });
+
+})();
+</script>
 </body>
 </html>
