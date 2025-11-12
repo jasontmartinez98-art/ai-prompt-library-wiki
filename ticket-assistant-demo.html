@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Ticket Assistant (Demo) – Jason Martinez</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --bg-content: #ffffff;
+      --border: #dde2ee;
+      --accent: #2563eb;
+      --accent-soft: #e5edff;
+      --text-main: #111827;
+      --text-muted: #4b5563;
+      --code-bg: #f3f4f6;
+      --shadow-soft: 0 10px 25px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #eef3ff 0, #f5f7fb 45%, #f9fafb 100%);
+      color: var(--text-main);
+    }
+
+    .page {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    @media (min-width: 768px) {
+      .page {
+        padding: 2.5rem 1.5rem 4rem;
+      }
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Header / Hero */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 500;
+    }
+
+    .nav-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+
+    .nav-right a {
+      font-size: 0.85rem;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1d4ed8, #6366f1);
+      border-radius: 1.1rem;
+      padding: 1.6rem 1.4rem;
+      color: #ffffff;
+      box-shadow: var(--shadow-soft);
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr);
+      gap: 1.25rem;
+    }
+
+    @media (min-width: 880px) {
+      .hero {
+        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr);
+        align-items: center;
+      }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.24);
+      border: 1px solid rgba(191, 219, 254, 0.4);
+      margin-bottom: 0.6rem;
+    }
+
+    .hero-title {
+      font-size: 1.8rem;
+      font-weight: 650;
+      margin: 0 0 0.4rem;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-subtitle {
+      font-size: 0.95rem;
+      margin: 0 0 0.85rem;
+      color: #e5edff;
+    }
+
+    .hero-meta {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .hero-meta span::before {
+      content: "•";
+      margin: 0 0.3rem 0 0;
+      opacity: 0.7;
+    }
+
+    .hero-meta span:first-child::before {
+      content: "";
+      margin: 0;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      background: #ffffff;
+      color: #1d4ed8;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 0.2rem;
+    }
+
+    .hero-cta span.icon {
+      font-size: 1rem;
+    }
+
+    .hero-aside {
+      border-radius: 0.9rem;
+      border: 1px solid rgba(191, 219, 254, 0.6);
+      background: radial-gradient(circle at top left, rgba(191, 219, 254, 0.3), transparent);
+      padding: 0.9rem 0.95rem;
+      font-size: 0.8rem;
+      color: #e5edff;
+    }
+
+    .hero-aside-title {
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .hero-aside-title span.icon {
+      font-size: 1rem;
+    }
+
+    .hero-aside ul {
+      padding-left: 1.1rem;
+      margin: 0.35rem 0 0;
+      list-style: disc;
+    }
+
+    .hero-aside li {
+      margin-bottom: 0.2rem;
+    }
+
+    /* Section shells */
+    .section {
+      margin-top: 1.7rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .section-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      background: var(--accent-soft);
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .section-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+    }
+
+    /* How it Works */
+    .how-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.8rem;
+    }
+
+    @media (min-width: 768px) {
+      .how-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    .how-card {
+      background: var(--bg-content);
+      border-radius: 0.8rem;
+      border: 1px solid var(--border);
+      padding: 0.85rem 0.9rem;
+      box-shadow: var(--shadow-soft);
+      font-size: 0.9rem;
+    }
+
+    .how-step {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+    }
+
+    .how-title {
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+    }
+
+    .how-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Ticket cards */
+    .tickets-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    @media (min-width: 900px) {
+      .tickets-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .ticket-card {
+      background: var(--bg-content);
+      border-radius: 0.95rem;
+      border: 1px solid var(--border);
+      padding: 0.9rem 0.95rem;
+      box-shadow: var(--shadow-soft);
+      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .ticket-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ticket-title {
+      font-weight: 600;
+    }
+
+    .ticket-tag {
+      font-size: 0.75rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fcd34d;
+    }
+
+    .ticket-section-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.15rem;
+      font-weight: 600;
+    }
+
+    .ticket-text {
+      font-size: 0.85rem;
+      line-height: 1.4;
+      background: #f9fafb;
+      border-radius: 0.45rem;
+      padding: 0.4rem 0.5rem;
+    }
+
+    .ai-block {
+      border-radius: 0.55rem;
+      padding: 0.45rem 0.55rem;
+      background: #f3f4ff;
+      border: 1px solid #e0e7ff;
+    }
+
+    .ai-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #4f46e5;
+      margin-bottom: 0.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .ai-text {
+      font-size: 0.86rem;
+    }
+
+    .kb-block {
+      border-radius: 0.55rem;
+      padding: 0.45rem 0.55rem;
+      background: #f3f4f6;
+    }
+
+    .kb-heading {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.1rem;
+    }
+
+    .kb-meta {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 0.15rem;
+    }
+
+    .kb-body {
+      font-size: 0.84rem;
+    }
+
+    /* Why it matters */
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.85rem;
+    }
+
+    @media (min-width: 768px) {
+      .benefits-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    .benefit-card {
+      background: var(--bg-content);
+      border-radius: 0.9rem;
+      border: 1px solid var(--border);
+      padding: 0.8rem 0.85rem;
+      box-shadow: var(--shadow-soft);
+      font-size: 0.88rem;
+    }
+
+    .benefit-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      background: var(--accent-soft);
+      margin-bottom: 0.35rem;
+    }
+
+    .benefit-title {
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+    }
+
+    .benefit-text {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      border-top: 1px dashed var(--border);
+      padding-top: 0.7rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-left span::before {
+      content: "•";
+      margin: 0 0.3rem 0 0;
+      color: #9ca3af;
+    }
+
+    .footer-left span:first-child::before {
+      content: "";
+      margin: 0;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .footer-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .footer-link-icon {
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="top-nav">
+      <div class="nav-left">
+        <div class="nav-dot"></div>
+        <span>AI Enablement · Internal Demo</span>
+      </div>
+      <div class="nav-right">
+        <!-- Adjust this link if your index.html is in a different path -->
+        <a href="./index.html">← Back to AI Prompt Wiki</a>
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div>
+        <div class="hero-badge">
+          <span>🧠 AI Ticket Assistant (Demo)</span>
+        </div>
+        <h1 class="hero-title">Helping IT support teams work faster with AI.</h1>
+        <p class="hero-subtitle">
+          A proof of concept showing how tools like ChatGPT and Copilot can summarize
+          tickets, draft user responses, and generate documentation for IT operations.
+        </p>
+        <div class="hero-meta">
+          <span>Designed by Jason Martinez</span>
+          <span>AI Enablement · IT Support Operations</span>
+        </div>
+        <a href="#tickets" class="hero-cta">
+          <span class="icon">👇</span>
+          <span>View example tickets</span>
+        </a>
+      </div>
+      <aside class="hero-aside">
+        <div class="hero-aside-title">
+          <span class="icon">✨</span>
+          <span>What this demo represents</span>
+        </div>
+        <p>
+          This page simulates how an AI assistant could plug into an IT support
+          workflow as a “sidekick” for agents – not to replace them, but to speed up
+          the writing and documentation work around tickets.
+        </p>
+        <ul>
+          <li>No live data or systems – just realistic scenarios.</li>
+          <li>Designed to be vendor-agnostic (ServiceNow, Jira, etc.).</li>
+          <li>Shows what AI enablement could look like in practice.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <!-- How it works -->
+    <section class="section" id="how-it-works">
+      <div class="section-header">
+        <div class="section-icon">⚙️</div>
+        <div class="section-title">How this assistant would fit into the workflow</div>
+      </div>
+      <p class="section-subtitle">
+        The idea is simple: the agent still owns the ticket – AI just helps with the text-heavy parts.
+      </p>
+      <div class="how-grid">
+        <div class="how-card">
+          <div class="how-step">Step 1</div>
+          <div class="how-title">Paste or receive the ticket</div>
+          <div class="how-text">
+            The IT agent copies the user’s description from the ticketing system
+            (ServiceNow, Jira, etc.) into the AI assistant.
+          </div>
+        </div>
+        <div class="how-card">
+          <div class="how-step">Step 2</div>
+          <div class="how-title">AI summarizes and drafts responses</div>
+          <div class="how-text">
+            AI generates a concise internal summary, a suggested user-facing response,
+            and a KB-style resolution draft.
+          </div>
+        </div>
+        <div class="how-card">
+          <div class="how-step">Step 3</div>
+          <div class="how-title">Agent reviews and finalizes</div>
+          <div class="how-text">
+            The agent keeps full control – editing, approving, and pasting the content
+            back into the ticket, email, or knowledge base.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Example tickets -->
+    <section class="section" id="tickets">
+      <div class="section-header">
+        <div class="section-icon">📩</div>
+        <div class="section-title">Example tickets with AI-generated support</div>
+      </div>
+      <p class="section-subtitle">
+        Each example below shows how an AI assistant could support the agent with a realistic IT issue:
+        internal summary, user response, and documentation.
+      </p>
+
+      <div class="tickets-grid">
+        <!-- Ticket 1 -->
+        <article class="ticket-card">
+          <div class="ticket-header">
+            <div>
+              <div class="ticket-title">Ticket #1 – VPN not connecting from home</div>
+              <div class="ticket-tag">Remote access</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ticket-section-label">Ticket input (user description)</div>
+            <div class="ticket-text">
+              “I’m working from home and can’t connect to the VPN. It keeps giving me an
+              error that my network credentials are invalid. I’ve rebooted my laptop
+              and router a couple of times but it still won’t connect.”
+            </div>
+          </div>
+
+          <div class="ai-block">
+            <div class="ai-label">AI summary (internal)</div>
+            <div class="ai-text">
+              Remote user unable to connect to corporate VPN from home due to invalid or
+              outdated credentials; resolved by resetting VPN profile and verifying
+              authentication.
+            </div>
+          </div>
+
+          <div class="ai-block">
+            <div class="ai-label">AI draft – response to user</div>
+            <div class="ai-text">
+              Hi [Name],<br /><br />
+              We’ve reset your VPN profile and verified your network credentials on
+              our side. Please restart your laptop, reconnect to your home network,
+              and try logging into the VPN again.<br /><br />
+              If you still see an “invalid credentials” message, please send us a
+              screenshot and we’ll continue troubleshooting from there.<br /><br />
+              Thanks,<br />
+              IT Support
+            </div>
+          </div>
+
+          <div class="kb-block">
+            <div class="kb-heading">KB article draft (internal)</div>
+            <div class="kb-meta">
+              <strong>Title:</strong> VPN Fails with “Invalid Network Credentials” from Home<br />
+              <strong>Category:</strong> Remote access / VPN
+            </div>
+            <div class="kb-body">
+              <strong>Issue:</strong> User could not connect to VPN from a home
+              network and received an “invalid network credentials” error.<br /><br />
+              <strong>Cause:</strong> VPN profile was out of sync with current
+              credentials stored in the directory.<br /><br />
+              <strong>Resolution:</strong>
+              <ul>
+                <li>Reset VPN profile in the admin console.</li>
+                <li>Verified user account status and credentials.</li>
+                <li>Asked user to reboot device and reconnect to VPN.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- Ticket 2 -->
+        <article class="ticket-card">
+          <div class="ticket-header">
+            <div>
+              <div class="ticket-title">Ticket #2 – Outlook crashes on attachments</div>
+              <div class="ticket-tag">Email client</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ticket-section-label">Ticket input (user description)</div>
+            <div class="ticket-text">
+              “Every time I try to open an attachment in Outlook, the app freezes and
+              then closes. I’ve tried with different emails and file types and it
+              keeps happening.”
+            </div>
+          </div>
+
+          <div class="ai-block">
+            <div class="ai-label">AI summary (internal)</div>
+            <div class="ai-text">
+              User’s Outlook client crashes whenever attachments are opened; issue
+              resolved by repairing the Outlook installation and clearing local cache.
+            </div>
+          </div>
+
+          <div class="ai-block">
+            <div class="ai-label">AI draft – response to user</div>
+            <div class="ai-text">
+              Hi [Name],<br /><br />
+              We’ve repaired your Outlook installation and cleared the local cache
+              files that were causing the application to crash when opening attachments.<br /><br />
+              Please relaunch Outlook and try opening a few attachments again. If you
+              notice any continued crashes or freezing, let us know which email and
+              file type you’re using and we’ll investigate further.<br /><br />
+              Best,<br />
+              IT Support
+            </div>
+          </div>
+
+          <div class="kb-block">
+            <div class="kb-heading">KB article draft (internal)</div>
+            <div class="kb-meta">
+              <strong>Title:</strong> Outlook Crashes When Opening Attachments<br />
+              <strong>Category:</strong> Messaging / Outlook
+            </div>
+            <div class="kb-body">
+              <strong>Issue:</strong> Outlook crashed consistently when users opened
+              email attachments of various file types.<br /><br />
+              <strong>Cause:</strong> Corrupted local cache files and incomplete
+              Office installation components.<br /><br />
+              <strong>Resolution:</strong>
+              <ul>
+                <li>Run “Quick Repair” or “Online Repair” for Office/Outlook.</li>
+                <li>Clear Outlook cache and temporary files.</li>
+                <li>Restart Outlook and validate that attachments open normally.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- Ticket 3 -->
+        <article class="ticket-card">
+          <div class="ticket-header">
+            <div>
+              <div class="ticket-title">Ticket #3 – Printer missing from device list</div>
+              <div class="ticket-tag">Printing</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ticket-section-label">Ticket input (user description)</div>
+            <div class="ticket-text">
+              “The 3rd floor printer isn’t showing up in my list anymore. I used it
+              last week, but now it’s just gone and I can’t print anything to it.”
+            </div>
+          </div>
+
+          <div class="ai-block">
+            <div class="ai-label">AI summary (internal)</div>
+            <div class="ai-text">
+              User cannot see the 3rd floor printer in their devices list; resolved
+              by reinstalling the printer driver and remapping the printer from the
+              print server.
+            </div>
+          </div>
+
+          <div class="ai-block">
+            <div class="ai-label">AI draft – response to user</div>
+            <div class="ai-text">
+              Hi [Name],<br /><br />
+              We’ve reinstalled the driver and re-mapped the 3rd floor printer to
+              your profile. It should now appear in your printer list and be
+              available as a print option in your applications.<br /><br />
+              Please try printing a test page. If the printer still doesn’t show up
+              or you see an error, reply with a screenshot and we’ll take another
+              look.<br /><br />
+              Thanks,<br />
+              IT Support
+            </div>
+          </div>
+
+          <div class="kb-block">
+            <div class="kb-heading">KB article draft (internal)</div>
+            <div class="kb-meta">
+              <strong>Title:</strong> Network Printer Not Appearing in Device List<br />
+              <strong>Category:</strong> Printing / Devices
+            </div>
+            <div class="kb-body">
+              <strong>Issue:</strong> Floor printer disappeared from user’s available
+              printer list after previously working.<br /><br />
+              <strong>Cause:</strong> Local printer mapping or driver became invalid
+              or corrupted.<br /><br />
+              <strong>Resolution:</strong>
+              <ul>
+                <li>Remove old printer mapping from the device.</li>
+                <li>Reinstall or update the printer driver.</li>
+                <li>Remap the printer from the central print server.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- Ticket 4 -->
+        <article class="ticket-card">
+          <div class="ticket-header">
+            <div>
+              <div class="ticket-title">Ticket #4 – Software request stuck in approval</div>
+              <div class="ticket-tag">Software / Access</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ticket-section-label">Ticket input (user description)</div>
+            <div class="ticket-text">
+              “I requested access to [Software Name] a few days ago and the portal
+              still says 'pending approval'. I need it for a project and haven’t
+              heard anything back.”
+            </div>
+          </div>
+
+          <div class="ai-block">
+            <div class="ai-label">AI summary (internal)</div>
+            <div class="ai-text">
+              User’s software access request has been pending in the approval queue
+              for several days; resolved by manually approving the request and
+              completing installation via the company portal.
+            </div>
+          </div>
+
+          <div class="ai-block">
+            <div class="ai-label">AI draft – response to user</div>
+            <div class="ai-text">
+              Hi [Name],<br /><br />
+              We reviewed your request for [Software Name] and have manually
+              approved it in the system. The software has now been installed and
+              should be available from your Start menu or application launcher.<br /><br />
+              If you still don’t see it or run into any access issues, please let us
+              know and we’ll check your permissions.<br /><br />
+              Best,<br />
+              IT Support
+            </div>
+          </div>
+
+          <div class="kb-block">
+            <div class="kb-heading">KB article draft (internal)</div>
+            <div class="kb-meta">
+              <strong>Title:</strong> Software Request Stuck in Pending Approval<br />
+              <strong>Category:</strong> Software / Access Requests
+            </div>
+            <div class="kb-body">
+              <strong>Issue:</strong> Software installation requests remained in
+              “pending approval” state longer than expected.<br /><br />
+              <strong>Cause:</strong> Approval workflow delay in the portal; request
+              not auto-routed or confirmed.<br /><br />
+              <strong>Resolution:</strong>
+              <ul>
+                <li>Review request in admin portal and approve manually.</li>
+                <li>Trigger installation from the software catalog.</li>
+                <li>Confirm the user can see and launch the application.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Why it matters -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-icon">📊</div>
+        <div class="section-title">Why this kind of assistant matters</div>
+      </div>
+      <p class="section-subtitle">
+        Even without changing existing tools, an AI “sidekick” like this can make a
+        noticeable difference in day-to-day support work.
+      </p>
+
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">⏱️</div>
+          <div class="benefit-title">Time savings on repetitive writing</div>
+          <div class="benefit-text">
+            Agents spend less time rewriting the same type of responses and
+            documentation, and more time actually resolving issues.
+          </div>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">💬</div>
+          <div class="benefit-title">Consistent, professional tone</div>
+          <div class="benefit-text">
+            User communications stay clear, friendly, and consistent across the team,
+            even during busy periods or high ticket volume.
+          </div>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">📘</div>
+          <div class="benefit-title">Better documentation over time</div>
+          <div class="benefit-text">
+            Turning more tickets into KB articles makes future issues easier to
+            solve, and helps onboard new support staff faster.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-left">
+        <span>AI Ticket Assistant Demo</span>
+        <span>Part of the AI Enablement toolkit</span>
+      </div>
+      <div class="footer-links">
+        <a class="footer-link" href="./index.html">
+          <span class="footer-link-icon">📚</span>
+          <span>AI Prompt Library Wiki</span>
+        </a>
+        <span class="footer-link">
+          <span class="footer-link-icon">👤</span>
+          <span>Built by Jason Martinez</span>
+        </span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
