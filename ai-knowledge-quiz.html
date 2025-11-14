@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Enablement Wiki – IT Support: AI Knowledge Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* Basic page layout */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f7fb;
+      color: #1f2933;
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    /* Header / hero */
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .header-title {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .header-subtitle {
+      font-size: 15px;
+      font-weight: 500;
+      color: #52606d;
+      margin-bottom: 4px;
+    }
+
+    .header-meta {
+      font-size: 13px;
+      color: #7b8794;
+    }
+
+    /* Card container */
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px 18px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .section-body {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #52606d;
+    }
+
+    .bullet-list {
+      margin: 8px 0 0 18px;
+      padding: 0;
+      font-size: 14px;
+      color: #52606d;
+    }
+
+    .bullet-list li {
+      margin-bottom: 4px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.45);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-secondary {
+      background: #e4e7eb;
+      color: #1f2933;
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd2d9;
+    }
+
+    .btn:disabled {
+      opacity: 0.7;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .start-wrapper {
+      text-align: center;
+      margin-top: 14px;
+    }
+
+    /* Quiz */
+    #quiz-card {
+      display: none;
+    }
+
+    .quiz-header-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #7b8794;
+      margin-bottom: 10px;
+    }
+
+    .quiz-progress {
+      font-weight: 500;
+    }
+
+    .quiz-question {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #1f2933;
+    }
+
+    .answer-list {
+      list-style: none;
+      margin: 12px 0 8px;
+      padding: 0;
+    }
+
+    .answer-item {
+      margin-bottom: 8px;
+    }
+
+    .answer-btn {
+      width: 100%;
+      text-align: left;
+      border-radius: 10px;
+      padding: 9px 12px;
+      border: 1px solid #d8e2ec;
+      background: #f9fafb;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.12s ease, border-color 0.12s ease;
+      white-space: normal;
+    }
+
+    .answer-btn:hover {
+      background: #eef2ff;
+      border-color: #c3dafe;
+    }
+
+    .answer-btn.selected-wrong {
+      background: #fff5f5;
+      border-color: #f56565;
+      color: #97266d;
+    }
+
+    .answer-btn.correct {
+      background: #ecfdf3;
+      border-color: #38a169;
+      color: #22543d;
+    }
+
+    .feedback {
+      font-size: 13px;
+      margin-top: 6px;
+      min-height: 18px;
+    }
+
+    .feedback.error {
+      color: #b91c1c;
+    }
+
+    .feedback.success {
+      color: #166534;
+    }
+
+    .next-wrapper {
+      text-align: right;
+      margin-top: 12px;
+    }
+
+    /* Results */
+    #results-card {
+      display: none;
+    }
+
+    .score-line {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .score-subline {
+      font-size: 13px;
+      color: #7b8794;
+      margin-bottom: 12px;
+    }
+
+    .results-breakdown-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 10px;
+      margin-bottom: 6px;
+    }
+
+    .result-question {
+      margin-bottom: 10px;
+    }
+
+    .result-question-text {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 2px;
+      color: #1f2933;
+    }
+
+    .result-answer {
+      font-size: 13px;
+      color: #52606d;
+      margin-bottom: 2px;
+    }
+
+    .result-explanation {
+      font-size: 13px;
+      color: #7b8794;
+    }
+
+    /* Footer / org value */
+    .footer-section-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .footer-note {
+      font-size: 13px;
+      color: #7b8794;
+      margin-top: 6px;
+    }
+
+    @media (min-width: 700px) {
+      .card {
+        padding: 22px 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-subtitle">AI Enablement Wiki</div>
+      <div class="header-title">IT Support – AI Knowledge Quiz</div>
+      <div class="header-meta">Created by Jason Martinez</div>
+    </div>
+
+    <!-- INTRO / PURPOSE -->
+    <div class="card" id="intro-card">
+      <div class="section-title">Why this quiz exists</div>
+      <div class="section-body">
+        This quiz is designed for IT support teams who are starting to use AI tools in their daily work.
+        It focuses on practical fundamentals: how to ask better questions, when to use AI, how to avoid
+        bad answers, and how to write clearer messages and ticket summaries.
+        <br/><br/>
+        The goal is not to test how “technical” you are. The goal is to help technicians and managers
+        learn how to use AI as a support tool in a safe, clear, and effective way.
+      </div>
+      <ul class="bullet-list">
+        <li>Understand when AI is helpful and when it isn’t.</li>
+        <li>Give AI better details so answers are more accurate.</li>
+        <li>Write clearer messages to users and better ticket notes.</li>
+        <li>Avoid sharing sensitive information with AI tools.</li>
+      </ul>
+
+      <div class="start-wrapper">
+        <button class="btn btn-primary" id="start-btn">Start Quiz</button>
+      </div>
+    </div>
+
+    <!-- QUIZ CARD -->
+    <div class="card" id="quiz-card">
+      <div class="quiz-header-line">
+        <div class="quiz-progress" id="quiz-progress">Question 1 of 6</div>
+        <div class="quiz-label">AI Fundamentals – IT Support</div>
+      </div>
+      <div class="quiz-question" id="quiz-question-text">
+        <!-- Question text goes here -->
+      </div>
+      <ul class="answer-list" id="answer-list">
+        <!-- Answer buttons injected here -->
+      </ul>
+      <div class="feedback" id="feedback"></div>
+      <div class="next-wrapper">
+        <button class="btn btn-primary" id="next-btn" disabled>Next question</button>
+      </div>
+    </div>
+
+    <!-- RESULTS CARD -->
+    <div class="card" id="results-card">
+      <div class="section-title">Your quiz results</div>
+      <div class="score-line" id="score-line"></div>
+      <div class="score-subline" id="score-subline"></div>
+
+      <div class="results-breakdown-title">Question breakdown</div>
+      <div id="results-breakdown">
+        <!-- Filled in by JS -->
+      </div>
+
+      <div style="margin-top: 14px; text-align: right;">
+        <button class="btn btn-secondary" id="retry-btn">Retake quiz</button>
+      </div>
+    </div>
+
+    <!-- ORG VALUE / PITCH TO LEADERSHIP -->
+    <div class="card">
+      <div class="footer-section-title">How this quiz can be used in an IT organization</div>
+      <div class="section-body">
+        This quiz can be used as a simple training module for new hires, existing support teams, or
+        managers who want to understand how AI fits into their support workflows. It can be adapted to
+        internal policies, expanded with organization-specific examples, and built into onboarding or
+        recurring training cycles.
+      </div>
+      <ul class="bullet-list">
+        <li>Onboarding: introduce new technicians to safe and effective AI usage.</li>
+        <li>Team training: reinforce good habits for prompts, documentation, and user communication.</li>
+        <li>Quality: support higher ticket quality and more consistent responses.</li>
+        <li>Leadership: provide a starting point for building a broader AI Enablement Wiki.</li>
+      </ul>
+      <div class="footer-note">
+        This page is intended as a concept that organizations can adopt, customize, and extend for their
+        own IT support teams.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Quiz Data ---
+    const questions = [
+      {
+        text: "Which prompt will give AI the clearest troubleshooting steps?",
+        options: [
+          "My VPN is broken. What do I do?",
+          "User says GlobalProtect won’t connect. What should I check?",
+          "Give me steps to fix VPN issues.",
+          "Provide step-by-step troubleshooting for GlobalProtect not connecting on macOS. Include common causes and how to check them."
+        ],
+        correctIndex: 3,
+        explanation: "The last option gives the app, the issue, the system, and what details to include. That gives AI the best chance to respond with useful, accurate steps."
+      },
+      {
+        text: "Which prompt helps prevent AI from giving wrong or made-up information?",
+        options: [
+          "Explain everything you know about Teams errors.",
+          "Act like an expert technician and diagnose this.",
+          "Here is the exact error message. Based ONLY on this message, give 3 possible causes and 3 ways to check each one. If unsure, say you don’t know.",
+          "Fix this issue for me."
+        ],
+        correctIndex: 2,
+        explanation: "Limiting AI to the real error message and telling it to explain what it does not know reduces the chance of incorrect or invented answers."
+      },
+      {
+        text: "In which situation should you NOT use AI?",
+        options: [
+          "Summarizing a long troubleshooting note.",
+          "Rewriting a message to make it clearer for a user.",
+          "Turning messy ticket notes into a clean summary.",
+          "When the ticket includes sensitive information like passwords, personal details, or login screenshots."
+        ],
+        correctIndex: 3,
+        explanation: "Sensitive information such as passwords, personal data, or login screenshots should not be shared with AI tools unless your organization provides a secure, approved environment."
+      },
+      {
+        text: "Which version gives AI the BEST chance of providing helpful troubleshooting steps?",
+        options: [
+          "User can’t connect to Wi-Fi.",
+          "Laptop won’t join any network.",
+          "User on a MacBook with macOS Sonoma can’t join corporate Wi-Fi. Error: 'Authentication Failed.' Restart already tried. Works on hotspot.",
+          "Wi-Fi broken."
+        ],
+        correctIndex: 2,
+        explanation: "The third option gives device, OS version, exact error, previous steps tried, and where it still works. That level of detail makes AI much more helpful."
+      },
+      {
+        text: "Which message is BEST for communicating with a user?",
+        options: [
+          "I fixed your issue.",
+          "Your problem should be resolved now.",
+          "Issue appears to be fixed.",
+          "Your Teams login issue has been resolved. Please try signing in again when you have a moment. If the issue returns, reply here and I’ll keep working on it."
+        ],
+        correctIndex: 3,
+        explanation: "The final message is clear, polite, specific, and sets expectations for what the user should do next and how to get more help."
+      },
+      {
+        text: "Which ticket summary is the highest quality?",
+        options: [
+          "User had Teams issues. Fixed it.",
+          "Teams wasn’t loading so I reset stuff.",
+          "Teams wasn’t loading. Restarted Teams and cleared cache.",
+          "User reported Teams not loading. Confirmed the issue, cleared Teams cache, and restarted the app. User confirmed successful login. Provided tips to help prevent it happening again."
+        ],
+        correctIndex: 3,
+        explanation: "The last summary includes the issue, what was done, confirmation from the user, and a brief prevention note. This is the most complete and useful summary."
+      }
+    ];
+
+    // --- State ---
+    let currentIndex = 0;
+    let firstTryCorrectCount = 0;
+    let hasAnsweredCorrectly = false;
+    let attemptsThisQuestion = 0;
+
+    // --- Elements ---
+    const introCard = document.getElementById("intro-card");
+    const quizCard = document.getElementById("quiz-card");
+    const resultsCard = document.getElementById("results-card");
+
+    const startBtn = document.getElementById("start-btn");
+    const quizProgress = document.getElementById("quiz-progress");
+    const quizQuestionText = document.getElementById("quiz-question-text");
+    const answerList = document.getElementById("answer-list");
+    const feedbackEl = document.getElementById("feedback");
+    const nextBtn = document.getElementById("next-btn");
+
+    const scoreLine = document.getElementById("score-line");
+    const scoreSubline = document.getElementById("score-subline");
+    const resultsBreakdown = document.getElementById("results-breakdown");
+    const retryBtn = document.getElementById("retry-btn");
+
+    // --- Handlers ---
+    startBtn.addEventListener("click", () => {
+      introCard.style.display = "none";
+      resultsCard.style.display = "none";
+      quizCard.style.display = "block";
+      startQuiz();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (!hasAnsweredCorrectly) return;
+      currentIndex++;
+      if (currentIndex >= questions.length) {
+        showResults();
+      } else {
+        loadQuestion(currentIndex);
+      }
+    });
+
+    retryBtn.addEventListener("click", () => {
+      currentIndex = 0;
+      firstTryCorrectCount = 0;
+      hasAnsweredCorrectly = false;
+      attemptsThisQuestion = 0;
+      resultsCard.style.display = "none";
+      introCard.style.display = "block";
+      // user taps "Start Quiz" again
+    });
+
+    function startQuiz() {
+      currentIndex = 0;
+      firstTryCorrectCount = 0;
+      loadQuestion(currentIndex);
+    }
+
+    function loadQuestion(index) {
+      const q = questions[index];
+      quizProgress.textContent = `Question ${index + 1} of ${questions.length}`;
+      quizQuestionText.textContent = q.text;
+      answerList.innerHTML = "";
+      feedbackEl.textContent = "";
+      feedbackEl.className = "feedback";
+      nextBtn.disabled = true;
+      hasAnsweredCorrectly = false;
+      attemptsThisQuestion = 0;
+
+      q.options.forEach((optionText, idx) => {
+        const li = document.createElement("li");
+        li.className = "answer-item";
+
+        const btn = document.createElement("button");
+        btn.className = "answer-btn";
+        btn.textContent = optionText;
+        btn.addEventListener("click", () => handleAnswer(idx, btn));
+
+        li.appendChild(btn);
+        answerList.appendChild(li);
+      });
+    }
+
+    function handleAnswer(selectedIndex, buttonEl) {
+      const q = questions[currentIndex];
+      if (hasAnsweredCorrectly) return; // do nothing once correct
+
+      attemptsThisQuestion++;
+
+      if (selectedIndex === q.correctIndex) {
+        // Correct
+        hasAnsweredCorrectly = true;
+        if (attemptsThisQuestion === 1) {
+          firstTryCorrectCount++;
+        }
+        // Style all buttons and disable them
+        const buttons = answerList.querySelectorAll(".answer-btn");
+        buttons.forEach((btn, idx) => {
+          btn.disabled = true;
+          if (idx === q.correctIndex) {
+            btn.classList.add("correct");
+          }
+        });
+
+        feedbackEl.textContent = "Correct: " + q.explanation;
+        feedbackEl.className = "feedback success";
+        nextBtn.disabled = false;
+      } else {
+        // Incorrect
+        buttonEl.classList.add("selected-wrong");
+        buttonEl.disabled = true;
+        feedbackEl.textContent = "Not quite. Try another option.";
+        feedbackEl.className = "feedback error";
+      }
+    }
+
+    function showResults() {
+      quizCard.style.display = "none";
+      resultsCard.style.display = "block";
+
+      scoreLine.textContent = `Correct on first attempt: ${firstTryCorrectCount} of ${questions.length}`;
+      scoreSubline.textContent = "You reached the correct answer on every question. Review the explanations below to reinforce what you learned.";
+
+      // Build breakdown
+      resultsBreakdown.innerHTML = "";
+      questions.forEach((q, idx) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "result-question";
+
+        const qText = document.createElement("div");
+        qText.className = "result-question-text";
+        qText.textContent = `Q${idx + 1}: ${q.text}`;
+
+        const ans = document.createElement("div");
+        ans.className = "result-answer";
+        ans.textContent = `Correct answer: ${q.options[q.correctIndex]}`;
+
+        const expl = document.createElement("div");
+        expl.className = "result-explanation";
+        expl.textContent = q.explanation;
+
+        wrapper.appendChild(qText);
+        wrapper.appendChild(ans);
+        wrapper.appendChild(expl);
+
+        resultsBreakdown.appendChild(wrapper);
+      });
+    }
+  </script>
+</body>
+</html>
